@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SalesPlatform.Domain\SalesPlatform.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Auth\Commands\Login\" />
+    <Folder Include="Common\Behaviors\" />
+    <Folder Include="Common\Exceptions\" />
+    <Folder Include="Common\Interfaces\" />
+    <Folder Include="SalesRecords\Commands\DeleteSalesRecord\" />
+    <Folder Include="SalesRecords\Commands\UpdateSalesRecord\" />
+    <Folder Include="SalesRecords\Queries\GetSalesRecordDetail\" />
+    <Folder Include="SalesRecords\Queries\GetSalesRecordsList\" />
+    <Folder Include="Uploads\Commands\CreateUploadBatch\" />
+    <Folder Include="Uploads\Queries\GetBatchList\" />
+    <Folder Include="Uploads\Queries\GetBatchStatus\" />
+    <Folder Include="Uploads\Validation\" />
+  </ItemGroup>
+
+</Project>

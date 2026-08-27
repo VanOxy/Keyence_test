@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="SalesPlatform.Api/SalesPlatform.Api.csproj" />
+    <Project Path="SalesPlatform.Application/SalesPlatform.Application.csproj" />
+    <Project Path="SalesPlatform.Application.Tests/SalesPlatform.Application.Tests.csproj" />
+    <Project Path="SalesPlatform.Domain/SalesPlatform.Domain.csproj" />
+    <Project Path="SalesPlatform.Infrastructure/SalesPlatform.Infrastructure.csproj" />
+  </Folder>
+</Solution>
