@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SalesPlatform.Api.Middleware;
 using SalesPlatform.Application;
 using SalesPlatform.Application.Common.Interfaces;
 using SalesPlatform.Infrastructure.Identity;
@@ -40,7 +41,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// We apply migrations and seed dev users at each launch 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// We apply migrations and seed dev users at each launch
 // so that the database is ready for work/testing without manual steps
 using (var scope = app.Services.CreateScope())
 {
