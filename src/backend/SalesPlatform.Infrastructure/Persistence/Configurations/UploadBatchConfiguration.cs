@@ -13,6 +13,7 @@ public class UploadBatchConfiguration : IEntityTypeConfiguration<UploadBatch>
 
         builder.HasOne<User>()
             .WithMany()
-            .HasForeignKey(b => b.UploadedByUserId);
+            .HasForeignKey(b => b.UploadedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
