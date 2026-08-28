@@ -19,10 +19,8 @@
     <Folder Include="SalesRecords\Commands\UpdateSalesRecord\" />
     <Folder Include="SalesRecords\Queries\GetSalesRecordDetail\" />
     <Folder Include="SalesRecords\Queries\GetSalesRecordsList\" />
-    <Folder Include="Uploads\Commands\CreateUploadBatch\" />
+    <Folder Include="Uploads\Import\Excel\" />
     <Folder Include="Uploads\Queries\GetBatchList\" />
-    <Folder Include="Uploads\Queries\GetBatchStatus\" />
-    <Folder Include="Uploads\Validation\" />
   </ItemGroup>
 
 </Project>
