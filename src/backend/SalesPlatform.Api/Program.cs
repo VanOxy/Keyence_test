@@ -47,6 +47,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Dev-only: lets the Vite dev server (different origin/port) call the API directly.
+const string DevCorsPolicy = "DevCors";
+builder.Services.AddCors(options =>
+    options.AddPolicy(DevCorsPolicy, policy => policy
+        .WithOrigins("http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod()));
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -67,6 +75,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors(DevCorsPolicy);
 }
 
 app.UseHttpsRedirection();
