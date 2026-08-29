@@ -1,6 +1,8 @@
+using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SalesPlatform.Application.Common.Interfaces;
+using SalesPlatform.Application.SalesReports.Commands.ImportSalesReport;
 
 namespace SalesPlatform.Api.Controllers;
 
@@ -9,16 +11,15 @@ namespace SalesPlatform.Api.Controllers;
 [Authorize]
 public class SalesReportsController : ControllerBase
 {
-    private readonly IFileStorage _fileStorage;
+    private readonly IMediator _mediator;
 
-    public SalesReportsController(IFileStorage fileStorage)
+    public SalesReportsController(IMediator mediator)
     {
-        _fileStorage = fileStorage;
+        _mediator = mediator;
     }
 
-    // tmp
     [HttpPost]
-    public async Task<ActionResult> Import(IFormFile file, CancellationToken cancellationToken)
+    public async Task<ActionResult<ImportResult>> Import(IFormFile file, CancellationToken cancellationToken)
     {
         if (file.Length == 0)
             return BadRequest("File is empty.");
@@ -26,15 +27,10 @@ public class SalesReportsController : ControllerBase
         if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
             return BadRequest("Only .xlsx files are allowed.");
 
-        var filePath = await _fileStorage.SaveAsync(file.OpenReadStream(), file.FileName, cancellationToken);
+        var ownerUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var command = new ImportSalesReportCommand(file.OpenReadStream(), file.FileName, ownerUserId);
 
-        try
-        {
-            return Ok(new { file.FileName, file.Length, savedTo = filePath });
-        }
-        finally
-        {
-            _fileStorage.Delete(filePath);
-        }
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
     }
 }

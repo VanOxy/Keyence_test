@@ -5,6 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using SalesPlatform.Api.Middleware;
 using SalesPlatform.Application;
 using SalesPlatform.Application.Common.Interfaces;
+using SalesPlatform.Application.SalesReports.Commands.ImportSalesReport.Excel;
+using SalesPlatform.Infrastructure.ExcelProcessing;
 using SalesPlatform.Infrastructure.Identity;
 using SalesPlatform.Infrastructure.Persistence;
 using SalesPlatform.Infrastructure.Storage;
@@ -20,6 +22,7 @@ builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbConte
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IFileStorage, TempFileStorage>();
+builder.Services.AddScoped<ISalesReportExcelReader, ClosedXmlSalesReportExcelReader>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
