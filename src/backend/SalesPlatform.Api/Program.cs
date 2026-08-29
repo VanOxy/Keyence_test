@@ -24,6 +24,9 @@ builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IFileStorage, TempFileStorage>();
 builder.Services.AddScoped<ISalesReportExcelReader, ClosedXmlSalesReportExcelReader>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
