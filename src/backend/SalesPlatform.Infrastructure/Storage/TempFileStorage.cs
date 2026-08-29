@@ -10,7 +10,6 @@ public class TempFileStorage : IFileStorage
     {
         Directory.CreateDirectory(UploadsDirectory);
 
-        // Guid-префикс — чтобы два одновременных загрузчика с одинаковым именем файла не затёрли друг друга.
         var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(fileName)}";
         var filePath = Path.Combine(UploadsDirectory, uniqueFileName);
 
