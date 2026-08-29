@@ -7,6 +7,7 @@ using SalesPlatform.Application;
 using SalesPlatform.Application.Common.Interfaces;
 using SalesPlatform.Infrastructure.Identity;
 using SalesPlatform.Infrastructure.Persistence;
+using SalesPlatform.Infrastructure.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbConte
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<IFileStorage, TempFileStorage>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
