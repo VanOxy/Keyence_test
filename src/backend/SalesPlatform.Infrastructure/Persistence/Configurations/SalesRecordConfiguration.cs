@@ -21,5 +21,10 @@ public class SalesRecordConfiguration : IEntityTypeConfiguration<SalesRecord>
             .WithMany()
             .HasForeignKey(r => r.OwnerUserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<SalesReport>()
+            .WithMany()
+            .HasForeignKey(r => r.SalesReportId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -70,6 +70,9 @@ namespace SalesPlatform.Infrastructure.Persistence.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid>("SalesReportId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -81,10 +84,12 @@ namespace SalesPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("OwnerUserId");
 
+                    b.HasIndex("SalesReportId");
+
                     b.ToTable("SalesRecords");
                 });
 
-            modelBuilder.Entity("SalesPlatform.Domain.Entities.UploadBatch", b =>
+            modelBuilder.Entity("SalesPlatform.Domain.Entities.SalesReport", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,27 +98,19 @@ namespace SalesPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ErrorsJson")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("OriginalFileName")
                         .IsRequired()
                         .HasMaxLength(260)
                         .HasColumnType("nvarchar(260)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<Guid>("UploadedByUserId")
+                    b.Property<Guid>("OwnerUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UploadedByUserId");
+                    b.HasIndex("OwnerUserId");
 
-                    b.ToTable("UploadBatches");
+                    b.ToTable("SalesReports");
                 });
 
             modelBuilder.Entity("SalesPlatform.Domain.Entities.User", b =>
@@ -167,13 +164,19 @@ namespace SalesPlatform.Infrastructure.Persistence.Migrations
                         .HasForeignKey("OwnerUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("SalesPlatform.Domain.Entities.SalesReport", null)
+                        .WithMany()
+                        .HasForeignKey("SalesReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("SalesPlatform.Domain.Entities.UploadBatch", b =>
+            modelBuilder.Entity("SalesPlatform.Domain.Entities.SalesReport", b =>
                 {
                     b.HasOne("SalesPlatform.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("UploadedByUserId")
+                        .HasForeignKey("OwnerUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

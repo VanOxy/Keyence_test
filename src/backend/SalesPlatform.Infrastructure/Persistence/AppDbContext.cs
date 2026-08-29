@@ -11,7 +11,7 @@ public class AppDbContext : DbContext, IAppDbContext
     }
 
     public DbSet<User> Users => Set<User>();
-    public DbSet<UploadBatch> UploadBatches => Set<UploadBatch>();
+    public DbSet<SalesReport> SalesReports => Set<SalesReport>();
     public DbSet<SalesRecord> SalesRecords => Set<SalesRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

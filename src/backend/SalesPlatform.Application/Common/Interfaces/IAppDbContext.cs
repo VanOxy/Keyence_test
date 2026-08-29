@@ -6,7 +6,7 @@ namespace SalesPlatform.Application.Common.Interfaces;
 public interface IAppDbContext
 {
     DbSet<User> Users { get; }
-    DbSet<UploadBatch> UploadBatches { get; }
+    DbSet<SalesReport> SalesReports { get; }
     DbSet<SalesRecord> SalesRecords { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

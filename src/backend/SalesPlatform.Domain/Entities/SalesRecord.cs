@@ -4,6 +4,7 @@ public class SalesRecord
 {
     public long Id { get; set; }
 
+    public Guid SalesReportId { get; set; }
     public Guid OwnerUserId { get; set; }
 
     public required DateOnly Date { get; set; }

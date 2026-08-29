@@ -30,11 +30,32 @@ namespace SalesPlatform.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SalesReports",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OriginalFileName = table.Column<string>(type: "nvarchar(260)", maxLength: 260, nullable: false),
+                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SalesReports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SalesReports_Users_OwnerUserId",
+                        column: x => x.OwnerUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SalesRecords",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    SalesReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OwnerUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     CompanyName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -51,33 +72,17 @@ namespace SalesPlatform.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_SalesRecords", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_SalesRecords_SalesReports_SalesReportId",
+                        column: x => x.SalesReportId,
+                        principalTable: "SalesReports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_SalesRecords_Users_OwnerUserId",
                         column: x => x.OwnerUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UploadBatches",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UploadedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OriginalFileName = table.Column<string>(type: "nvarchar(260)", maxLength: 260, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    ErrorsJson = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UploadBatches", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UploadBatches_Users_UploadedByUserId",
-                        column: x => x.UploadedByUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -86,9 +91,14 @@ namespace SalesPlatform.Infrastructure.Persistence.Migrations
                 column: "OwnerUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UploadBatches_UploadedByUserId",
-                table: "UploadBatches",
-                column: "UploadedByUserId");
+                name: "IX_SalesRecords_SalesReportId",
+                table: "SalesRecords",
+                column: "SalesReportId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SalesReports_OwnerUserId",
+                table: "SalesReports",
+                column: "OwnerUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -104,7 +114,7 @@ namespace SalesPlatform.Infrastructure.Persistence.Migrations
                 name: "SalesRecords");
 
             migrationBuilder.DropTable(
-                name: "UploadBatches");
+                name: "SalesReports");
 
             migrationBuilder.DropTable(
                 name: "Users");
