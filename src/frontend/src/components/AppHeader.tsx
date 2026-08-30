@@ -3,9 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import './AppHeader.css';
 
-// One entry per page in the top nav. Add Reports/All Records here once those pages exist —
-// nothing else needs to change to make them show up.
-const navItems = [{ key: '/upload', label: 'Upload' }];
+const navItems = [
+  { key: '/upload', label: 'Upload' },
+  { key: '/reports', label: 'Reports' },
+];
 
 export function AppHeader() {
   const { user, logout } = useAuth();

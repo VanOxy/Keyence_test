@@ -26,6 +26,12 @@ export interface ImportResult {
   salesReportId: string | null;
 }
 
+export interface SalesReportListItem {
+  id: string;
+  originalFileName: string;
+  createdAtUtc: string;
+}
+
 // Shape of every error response from ExceptionHandlingMiddleware (RFC 7807).
 export interface ProblemDetails {
   title: string;

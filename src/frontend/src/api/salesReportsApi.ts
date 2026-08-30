@@ -1,5 +1,5 @@
 import { httpClient } from './httpClient';
-import type { ImportResult } from './types';
+import type { ImportResult, SalesReportListItem } from './types';
 
 export const salesReportsApi = {
   import: (file: File) => {
@@ -12,4 +12,6 @@ export const salesReportsApi = {
       })
       .then((res) => res.data);
   },
+
+  list: () => httpClient.get<SalesReportListItem[]>('/api/sales-reports').then((res) => res.data),
 };

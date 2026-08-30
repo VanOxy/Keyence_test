@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SalesPlatform.Application.SalesReports.Commands.ImportSalesReport;
+using SalesPlatform.Application.SalesReports.Queries.GetSalesReportList;
 
 namespace SalesPlatform.Api.Controllers;
 
@@ -31,6 +32,13 @@ public class SalesReportsController : ControllerBase
         var command = new ImportSalesReportCommand(file.OpenReadStream(), file.FileName, ownerUserId);
 
         var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IReadOnlyList<SalesReportListItem>>> GetList(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetSalesReportListQuery(), cancellationToken);
         return Ok(result);
     }
 }
