@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Alert, Table, Typography } from 'antd';
+import { Alert, Button, message, Space, Table, Typography } from 'antd';
+import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { salesReportsApi } from '../api/salesReportsApi';
 import { getErrorMessage } from '../api/errors';
 import type { SalesReportListItem } from '../api/types';
@@ -35,6 +36,26 @@ export function SalesReportsListPage() {
             dataIndex: 'createdAtUtc',
             width: 220,
             render: (value: string) => new Date(value).toLocaleString(),
+          },
+          {
+            title: 'Action',
+            key: 'action',
+            width: 100,
+            render: (_, report: SalesReportListItem) => (
+              <Space>
+                <Button
+                  type="text"
+                  icon={<EyeOutlined />}
+                  onClick={() => message.info(`View ${report.originalFileName} — not implemented yet`)}
+                />
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => message.info(`Delete ${report.originalFileName} — not implemented yet`)}
+                />
+              </Space>
+            ),
           },
         ]}
       />
