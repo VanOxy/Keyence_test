@@ -34,7 +34,6 @@ public class ImportSalesReportCommandHandler : IRequestHandler<ImportSalesReport
             var records = new List<SalesRecord>();
             var errors = new List<RowError>();
             var validRowCount = 0;
-            var invalidRowCount = 0;
 
             var report = new SalesReport
             {
@@ -50,13 +49,12 @@ public class ImportSalesReportCommandHandler : IRequestHandler<ImportSalesReport
                 if (rowErrors.Count > 0)
                 {
                     errors.AddRange(rowErrors);
-                    invalidRowCount++;
                 }
                 else
                 {
                     validRowCount++;
 
-                    if (invalidRowCount > 0) continue;
+                    if (errors.Count > 0) continue;
                     
                     record!.SalesReportId = report.Id;
                     records.Add(record);
@@ -70,7 +68,7 @@ public class ImportSalesReportCommandHandler : IRequestHandler<ImportSalesReport
                     Success: false,
                     TotalRows: rawRows.Count,
                     ValidRows: validRowCount,
-                    InvalidRows: invalidRowCount,
+                    InvalidRows: errors.Count,
                     Errors: errors,
                     SalesReportId: null);
             } 
