@@ -25,3 +25,12 @@ export interface ImportResult {
   errors: RowError[];
   salesReportId: string | null;
 }
+
+// Shape of every error response from ExceptionHandlingMiddleware (RFC 7807).
+export interface ProblemDetails {
+  title: string;
+  status: number;
+  detail?: string;
+  // Only present for 400s from FluentValidation: field name -> messages.
+  errors?: Record<string, string[]>;
+}
