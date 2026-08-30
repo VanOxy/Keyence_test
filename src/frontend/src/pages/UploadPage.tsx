@@ -25,7 +25,7 @@ export function UploadPage() {
   };
 
   return (
-    <div style={{ maxWidth: 720, margin: '40px auto', padding: '0 16px' }}>
+    <div style={{ maxWidth: 880, margin: '40px auto', padding: '0 16px' }}>
       <Typography.Title level={3}>Import sales report</Typography.Title>
 
       <Upload beforeUpload={handleUpload} showUploadList={false} accept=".xlsx" disabled={loading}>
@@ -33,7 +33,7 @@ export function UploadPage() {
       </Upload>
 
       {errorMessage && (
-        <Alert style={{ marginTop: 24 }} type="error" message={errorMessage} showIcon />
+        <Alert style={{ marginTop: 24 }} type="error" title={errorMessage} showIcon />
       )}
 
       {result && (
@@ -43,13 +43,13 @@ export function UploadPage() {
               <Statistic title="Total" value={result.totalRows} />
             </Col>
             <Col span={8}>
-              <Statistic title="Valid" value={result.validRows} valueStyle={{ color: '#3f8600' }} />
+              <Statistic title="Valid" value={result.validRows} styles={{ content: { color: '#3f8600' } }} />
             </Col>
             <Col span={8}>
               <Statistic
                 title="Errors"
                 value={result.invalidRows}
-                valueStyle={result.invalidRows > 0 ? { color: '#cf1322' } : undefined}
+                styles={{ content: result.invalidRows > 0 ? { color: '#cf1322' } : undefined }}
               />
             </Col>
           </Row>
@@ -59,7 +59,7 @@ export function UploadPage() {
               style={{ marginTop: 16 }}
               type="success"
               showIcon
-              message="Import successful — all rows were saved."
+              title="Import successful — all rows were saved."
             />
           ) : (
             <>
@@ -67,7 +67,7 @@ export function UploadPage() {
                 style={{ marginTop: 16 }}
                 type="error"
                 showIcon
-                message="Import failed — nothing was saved. Fix the rows below and re-upload."
+                title="Import failed — nothing was saved. Fix the rows below and re-upload."
               />
               <Table
                 style={{ marginTop: 16 }}
