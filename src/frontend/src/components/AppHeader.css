@@ -1,3 +1,12 @@
-.ant-menu-dark.ant-menu-horizontal > .ant-menu-item-selected {
+/* Nav links stay plain text on the header — no filled background box in any state
+   (rest, hover, or selected), just a text-color change on hover for affordance. */
+.ant-menu-dark.ant-menu-horizontal {
   background: transparent;
+}
+
+.ant-menu-dark.ant-menu-horizontal > .ant-menu-item-selected,
+.ant-menu-dark.ant-menu-horizontal > .ant-menu-item:hover,
+.ant-menu-dark.ant-menu-horizontal > .ant-menu-item-active {
+  background: transparent !important;
+  color: #fff !important;
 }
