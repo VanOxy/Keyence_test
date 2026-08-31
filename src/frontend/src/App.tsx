@@ -5,6 +5,7 @@ import { ProtectedRoute } from './auth/ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
 import { UploadPage } from './pages/UploadPage';
 import { SalesReportsListPage } from './pages/SalesReportsListPage';
+import { SalesRecordsListPage } from './pages/SalesRecordsListPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           >
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/reports" element={<SalesReportsListPage />} />
+            <Route path="/records" element={<SalesRecordsListPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/upload" replace />} />
         </Routes>

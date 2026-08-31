@@ -32,6 +32,20 @@ export interface SalesReportListItem {
   createdAtUtc: string;
 }
 
+export interface SalesRecordListItem {
+  id: number;
+  date: string;
+  companyName: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  region: string;
+  product: string;
+  unitsSold: number;
+  unitPrice: number;
+  revenue: number;
+}
+
 // Shape of every error response from ExceptionHandlingMiddleware (RFC 7807).
 export interface ProblemDetails {
   title: string;

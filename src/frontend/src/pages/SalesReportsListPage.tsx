@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, message, Space, Table, Typography } from 'antd';
 import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { salesReportsApi } from '../api/salesReportsApi';
 import { getErrorMessage } from '../api/errors';
 import type { SalesReportListItem } from '../api/types';
 
 export function SalesReportsListPage() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [reports, setReports] = useState<SalesReportListItem[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export function SalesReportsListPage() {
                 <Button
                   type="text"
                   icon={<EyeOutlined />}
-                  onClick={() => message.info(`View ${report.originalFileName} — not implemented yet`)}
+                  onClick={() => navigate(`/records?salesReportId=${report.id}`)}
                 />
                 <Button
                   type="text"
