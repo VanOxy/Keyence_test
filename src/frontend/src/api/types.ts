@@ -30,6 +30,13 @@ export interface SalesReportListItem {
   id: string;
   originalFileName: string;
   createdAtUtc: string;
+  ownerId: string;
+  ownerFullName: string;
+}
+
+export interface SalesReportsPage {
+  items: SalesReportListItem[];
+  totalCount: number;
 }
 
 export interface SalesRecordListItem {
