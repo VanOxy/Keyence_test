@@ -1,7 +1,9 @@
 using System.Text;
+using HotChocolate.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SalesPlatform.Api.GraphQL.Queries;
 using SalesPlatform.Api.Middleware;
 using SalesPlatform.Application;
 using SalesPlatform.Application.Common.Interfaces;
@@ -43,6 +45,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
+builder.Services
+    .AddGraphQLServer()
+    .AddAuthorization()
+    .AddQueryType<SalesReportQueries>()
+    .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -51,7 +59,7 @@ builder.Services.AddSwaggerGen();
 const string DevCorsPolicy = "DevCors";
 builder.Services.AddCors(options =>
     options.AddPolicy(DevCorsPolicy, policy => policy
-        .WithOrigins("http://localhost:5173")
+        .WithOrigins("http://localhost:5173")   // to be remplaced in prod
         .AllowAnyHeader()
         .AllowAnyMethod()));
 
@@ -59,20 +67,19 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// We apply migrations and seed dev users at each launch
-// so that the database is ready for work/testing without manual steps
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
-
-    var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
-    await DbSeeder.SeedAsync(db, passwordHasher);
-}
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // We apply migrations and seed dev users at each launch
+    // so that the database is ready for work/testing without manual steps
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync();
+
+        var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+        await DbSeeder.SeedAsync(db, passwordHasher);
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors(DevCorsPolicy);
@@ -84,5 +91,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGraphQL();
 
 app.Run();
