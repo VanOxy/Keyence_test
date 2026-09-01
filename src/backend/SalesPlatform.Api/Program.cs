@@ -49,6 +49,7 @@ builder.Services
     .AddGraphQLServer()
     .AddAuthorization()
     .AddQueryType<SalesReportQueries>()
+    .AddTypeExtension<SalesRecordQueries>()
     .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
 
 builder.Services.AddControllers();
