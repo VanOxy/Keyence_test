@@ -53,6 +53,11 @@ export interface SalesRecordListItem {
   revenue: number;
 }
 
+export interface SalesRecordsPage {
+  items: SalesRecordListItem[];
+  totalCount: number;
+}
+
 // Shape of every error response from ExceptionHandlingMiddleware (RFC 7807).
 export interface ProblemDetails {
   title: string;
