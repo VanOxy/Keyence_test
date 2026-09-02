@@ -6,12 +6,15 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import { salesRecordsApi } from '../api/salesRecordsApi';
 import { getErrorMessage } from '../api/errors';
+import { useAuth } from '../auth/AuthContext';
 import type { SalesRecordListItem } from '../api/types';
 
 export function SalesRecordsListPage() {
   const [searchParams] = useSearchParams();
   const salesReportId = searchParams.get('salesReportId') ?? undefined;
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isManagerOrAdmin = user?.role === 'Manager' || user?.role === 'Admin';
 
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -114,7 +117,7 @@ export function SalesRecordsListPage() {
     <div style={{ maxWidth: 1200, margin: '40px auto', padding: '0 16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Typography.Title level={3} style={{ margin: 0 }}>
-          {salesReportId ? 'Report records' : 'All my records'}
+          {salesReportId ? 'Report records' : isManagerOrAdmin ? 'All records' : 'My records'}
         </Typography.Title>
 
         <Input.Search
