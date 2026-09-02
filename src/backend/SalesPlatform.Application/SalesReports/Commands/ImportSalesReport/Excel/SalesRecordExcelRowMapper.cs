@@ -59,6 +59,34 @@ public static class SalesRecordExcelRowMapper
         return (record, errors);
     }
 
+    public static (List<SalesRecord> Records, List<RowError> Errors, int ValidRowCount) MapAll(
+        IReadOnlyList<SalesReportExcelRawRow> rawRows, Guid ownerUserId, Guid reportId)
+    {
+        var records = new List<SalesRecord>();
+        var errors = new List<RowError>();
+        var validRowCount = 0;
+
+        foreach (var rawRow in rawRows)
+        {
+            var (record, rowErrors) = Map(rawRow, ownerUserId);
+            if (rowErrors.Count > 0)
+            {
+                errors.AddRange(rowErrors);
+            }
+            else
+            {
+                validRowCount++;
+
+                if (errors.Count > 0) continue;
+
+                record!.SalesReportId = reportId;
+                records.Add(record);
+            }
+        }
+
+        return (records, errors, validRowCount);
+    }
+
     private static DateOnly? TryParseDate(SalesReportExcelRawRow row, string column, List<RowError> errors)
     {
         var raw = row.Cells.GetValueOrDefault(column);
