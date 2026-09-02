@@ -2,6 +2,7 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SalesPlatform.Application.SalesReports.Commands.DeleteSalesReport;
 using SalesPlatform.Application.SalesReports.Commands.ImportSalesReport;
 
 namespace SalesPlatform.Api.Controllers;
@@ -32,5 +33,12 @@ public class SalesReportsController : ControllerBase
 
         var result = await _mediator.Send(command, cancellationToken);
         return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        await _mediator.Send(new DeleteSalesReportCommand(id), cancellationToken);
+        return NoContent();
     }
 }

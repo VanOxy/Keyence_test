@@ -43,4 +43,6 @@ export const salesReportsApi = {
     gqlClient
       .request<{ salesReports: SalesReportsPage }>(SALES_REPORTS_QUERY, params)
       .then((data) => data.salesReports),
+
+  delete: (id: string) => httpClient.delete(`/api/sales-reports/${id}`),
 };

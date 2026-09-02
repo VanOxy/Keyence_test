@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { Alert, Button, Input, message, Space, Table, Typography } from 'antd';
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { Alert, Button, Input, message, Popconfirm, Space, Table, Typography } from 'antd';
 import type { SorterResult } from 'antd/es/table/interface';
 import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ import type { SalesReportListItem } from '../api/types';
 
 export function SalesReportsListPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const isManagerOrAdmin = user?.role === 'Manager' || user?.role === 'Admin';
 
@@ -30,6 +31,15 @@ export function SalesReportsListPage() {
     queryFn: () =>
       salesReportsApi.list({ search: search || undefined, sortBy, descending, skip: (page - 1) * pageSize, take: pageSize }),
     placeholderData: keepPreviousData, // keep showing the current page while the next one loads
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => salesReportsApi.delete(id),
+    onSuccess: () => {
+      message.success('Report deleted.');
+      queryClient.invalidateQueries({ queryKey: ['salesReports'] });
+    },
+    onError: (err) => message.error(getErrorMessage(err)),
   });
 
   const handleTableChange = (
@@ -80,12 +90,15 @@ export function SalesReportsListPage() {
             icon={<EyeOutlined />}
             onClick={() => navigate(`/records?salesReportId=${report.id}`)}
           />
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => message.info(`Delete ${report.originalFileName} — not implemented yet`)}
-          />
+          <Popconfirm
+            title={`Delete ${report.originalFileName}?`}
+            description="This also deletes all of its records."
+            onConfirm={() => deleteMutation.mutate(report.id)}
+            okText="Delete"
+            okButtonProps={{ danger: true }}
+          >
+            <Button type="text" danger icon={<DeleteOutlined />} loading={deleteMutation.isPending} />
+          </Popconfirm>
         </Space>
       ),
     },
