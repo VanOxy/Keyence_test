@@ -78,7 +78,7 @@ export function SalesRecordsListPage() {
         </Typography.Title>
 
         <Input.Search
-          placeholder="Search by company, contact or product"
+          placeholder="Search..."
           allowClear
           style={{ width: 280 }}
           onSearch={handleSearch}

@@ -47,7 +47,10 @@ public class GetSalesRecordsListQueryHandler : IRequestHandler<GetSalesRecordsLi
             query = query.Where(r =>
                 r.CompanyName.Contains(search) ||
                 r.ContactPerson.Contains(search) ||
-                r.Product.Contains(search));
+                r.Product.Contains(search) ||
+                r.Phone.Contains(search) ||
+                r.Email.Contains(search) ||
+                r.Region.Contains(search));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
