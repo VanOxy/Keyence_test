@@ -58,6 +58,9 @@ export interface SalesRecordsPage {
   totalCount: number;
 }
 
+// Editable fields only — Id comes from the URL, not the body.
+export type UpdateSalesRecordInput = Omit<SalesRecordListItem, 'id'>;
+
 // Shape of every error response from ExceptionHandlingMiddleware (RFC 7807).
 export interface ProblemDetails {
   title: string;

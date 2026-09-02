@@ -6,6 +6,7 @@ import { LoginPage } from './pages/LoginPage';
 import { UploadPage } from './pages/UploadPage';
 import { SalesReportsListPage } from './pages/SalesReportsListPage';
 import { SalesRecordsListPage } from './pages/SalesRecordsListPage';
+import { SalesRecordEditPage } from './pages/SalesRecordEditPage';
 
 function App() {
   return (
@@ -24,6 +25,15 @@ function App() {
             <Route path="/reports" element={<SalesReportsListPage />} />
             <Route path="/records" element={<SalesRecordsListPage />} />
           </Route>
+          {/* Opens in a new tab from the records table — no header/nav, just the form. */}
+          <Route
+            path="/records/:id/edit"
+            element={
+              <ProtectedRoute>
+                <SalesRecordEditPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/upload" replace />} />
         </Routes>
       </BrowserRouter>

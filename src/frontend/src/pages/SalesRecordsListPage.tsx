@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { Alert, Input, Table, Typography } from 'antd';
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { Alert, Button, Input, message, Popconfirm, Space, Table, Typography } from 'antd';
 import type { SorterResult } from 'antd/es/table/interface';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import { salesRecordsApi } from '../api/salesRecordsApi';
 import { getErrorMessage } from '../api/errors';
@@ -10,6 +11,7 @@ import type { SalesRecordListItem } from '../api/types';
 export function SalesRecordsListPage() {
   const [searchParams] = useSearchParams();
   const salesReportId = searchParams.get('salesReportId') ?? undefined;
+  const queryClient = useQueryClient();
 
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -18,13 +20,15 @@ export function SalesRecordsListPage() {
   const [sortBy, setSortBy] = useState<string>();
   const [descending, setDescending] = useState(true);
 
+  const queryKey = ['salesRecords', salesReportId, search, sortBy, descending, page, pageSize];
+
   const {
     data,
     isLoading,
     isPlaceholderData,
     error,
   } = useQuery({
-    queryKey: ['salesRecords', salesReportId, search, sortBy, descending, page, pageSize],
+    queryKey,
     queryFn: () =>
       salesRecordsApi.list({
         salesReportId,
@@ -35,6 +39,15 @@ export function SalesRecordsListPage() {
         take: pageSize,
       }),
     placeholderData: keepPreviousData, // keep showing the current page while the next one loads
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => salesRecordsApi.delete(id),
+    onSuccess: () => {
+      message.success('Record deleted.');
+      queryClient.invalidateQueries({ queryKey: ['salesRecords'] });
+    },
+    onError: (err) => message.error(getErrorMessage(err)),
   });
 
   const handleTableChange = (
@@ -72,6 +85,29 @@ export function SalesRecordsListPage() {
     { title: 'Units', dataIndex: 'unitsSold', width: 80, align: 'right' as const, sorter: true as const },
     { title: 'Unit price', dataIndex: 'unitPrice', width: 100, align: 'right' as const, sorter: true as const },
     { title: 'Revenue', dataIndex: 'revenue', width: 110, align: 'right' as const, sorter: true as const },
+    {
+      title: 'Action',
+      key: 'action',
+      width: 90,
+      fixed: 'right' as const,
+      render: (_: unknown, record: SalesRecordListItem) => (
+        <Space>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => window.open(`/records/${record.id}/edit`, '_blank')}
+          />
+          <Popconfirm
+            title="Delete this record?"
+            onConfirm={() => deleteMutation.mutate(record.id)}
+            okText="Delete"
+            okButtonProps={{ danger: true }}
+          >
+            <Button type="text" danger icon={<DeleteOutlined />} loading={deleteMutation.isPending} />
+          </Popconfirm>
+        </Space>
+      ),
+    },
   ];
 
   return (
