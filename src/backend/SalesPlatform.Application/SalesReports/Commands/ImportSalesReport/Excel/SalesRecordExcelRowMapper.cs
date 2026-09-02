@@ -3,29 +3,39 @@ using SalesPlatform.Domain.Entities;
 
 namespace SalesPlatform.Application.SalesReports.Commands.ImportSalesReport.Excel;
 
-// Converts one raw Excel row into a typed SalesRecord, or collects structural errors
-// if a cell can't be coerced into the type its target field expects (wrong type, missing value).
-// This is the only validation the import does — no business rules (email format, Revenue
-// formula, etc.) are checked anywhere in the pipeline.
-//
-// SalesReportId is left as Guid.Empty: it isn't known until the SalesReport row is inserted.
-// The command handler patches it onto every mapped record right before the bulk insert.
 public static class SalesRecordExcelRowMapper
 {
+    private const string ColDate = "Date";
+    private const string ColCompanyName = "Company Name";
+    private const string ColContactPerson = "Contact Person";
+    private const string ColPhone = "Phone";
+    private const string ColEmail = "Email";
+    private const string ColRegion = "Region";
+    private const string ColProduct = "Product";
+    private const string ColUnitsSold = "Units Sold";
+    private const string ColUnitPrice = "Unit Price";
+    private const string ColRevenue = "Revenue";
+
+    public static readonly string[] RequiredColumns =
+    [
+        ColDate, ColCompanyName, ColContactPerson, ColPhone, ColEmail,
+        ColRegion, ColProduct, ColUnitsSold, ColUnitPrice, ColRevenue
+    ];
+
     public static (SalesRecord? Record, IReadOnlyList<RowError> Errors) Map(SalesReportExcelRawRow row, Guid ownerUserId)
     {
         var errors = new List<RowError>();
 
-        var date = TryParseDate(row, errors);
-        var companyName = TryParseRequiredString(row, "Company Name", errors);
-        var contactPerson = TryParseRequiredString(row, "Contact Person", errors);
-        var phone = TryParseRequiredString(row, "Phone", errors);
-        var email = TryParseRequiredString(row, "Email", errors);
-        var region = TryParseRequiredString(row, "Region", errors);
-        var product = TryParseRequiredString(row, "Product", errors);
-        var unitsSold = TryParseInt(row, "Units Sold", errors);
-        var unitPrice = TryParseDecimal(row, "Unit Price", errors);
-        var revenue = TryParseDecimal(row, "Revenue", errors);
+        var date = TryParseDate(row, ColDate, errors);
+        var companyName = TryParseRequiredString(row, ColCompanyName, errors);
+        var contactPerson = TryParseRequiredString(row, ColContactPerson, errors);
+        var phone = TryParseRequiredString(row, ColPhone, errors);
+        var email = TryParseRequiredString(row, ColEmail, errors);
+        var region = TryParseRequiredString(row, ColRegion, errors);
+        var product = TryParseRequiredString(row, ColProduct, errors);
+        var unitsSold = TryParseInt(row, ColUnitsSold, errors);
+        var unitPrice = TryParseDecimal(row, ColUnitPrice, errors);
+        var revenue = TryParseDecimal(row, ColRevenue, errors);
 
         if (errors.Count > 0)
             return (null, errors);
@@ -49,9 +59,9 @@ public static class SalesRecordExcelRowMapper
         return (record, errors);
     }
 
-    private static DateOnly? TryParseDate(SalesReportExcelRawRow row, List<RowError> errors)
+    private static DateOnly? TryParseDate(SalesReportExcelRawRow row, string column, List<RowError> errors)
     {
-        var raw = row.Cells.GetValueOrDefault("Date");
+        var raw = row.Cells.GetValueOrDefault(column);
         switch (raw)
         {
             case DateTime dt:
@@ -59,7 +69,7 @@ public static class SalesRecordExcelRowMapper
             case string s when DateOnly.TryParseExact(s.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed):
                 return parsed;
             default:
-                errors.Add(new RowError(row.RowNumber, "Date", raw, "Expected a date (yyyy-MM-dd)."));
+                errors.Add(new RowError(row.RowNumber, column, raw, "Expected a date (yyyy-MM-dd)."));
                 return null;
         }
     }

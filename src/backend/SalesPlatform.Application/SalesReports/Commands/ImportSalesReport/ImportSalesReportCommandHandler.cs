@@ -31,6 +31,38 @@ public class ImportSalesReportCommandHandler : IRequestHandler<ImportSalesReport
                 rawRows = _excelReader.Read(readStream);
             }
 
+            if (rawRows.Count == 0)
+            {
+                var noRowsError = new RowError(0, "File", null,
+                    "No data rows found. Check that the file has a header row with the expected columns " +
+                    "(Date, Company Name, Contact Person, Phone, Email, Region, Product, Units Sold, Unit Price, Revenue) " +
+                    "and at least one row of data below it.");
+
+                return new ImportResult(
+                    Success: false,
+                    TotalRows: 0,
+                    ValidRows: 0,
+                    InvalidRows: 1,
+                    Errors: [noRowsError],
+                    SalesReportId: null);
+            }
+
+            var missingColumns = SalesReportHeaderValidator.ValidateHeaders(rawRows[0].Cells.Keys);
+            if (missingColumns.Count > 0)
+            {
+                var formatError = new RowError(0, "File", null,
+                    $"This file doesn't match the expected sales report format. Missing column(s): {string.Join(", ", missingColumns)}. " +
+                    $"Expected columns: {string.Join(", ", SalesRecordExcelRowMapper.RequiredColumns)}.");
+
+                return new ImportResult(
+                    Success: false,
+                    TotalRows: rawRows.Count,
+                    ValidRows: 0,
+                    InvalidRows: 1,
+                    Errors: [formatError],
+                    SalesReportId: null);
+            }
+
             var records = new List<SalesRecord>();
             var errors = new List<RowError>();
             var validRowCount = 0;
