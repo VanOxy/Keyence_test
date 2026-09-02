@@ -2,6 +2,7 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SalesPlatform.Application.Common.Exceptions;
 using SalesPlatform.Application.SalesReports.Commands.DeleteSalesReport;
 using SalesPlatform.Application.SalesReports.Commands.ImportSalesReport;
 
@@ -23,10 +24,10 @@ public class SalesReportsController : ControllerBase
     public async Task<ActionResult<ImportResult>> Import(IFormFile file, CancellationToken cancellationToken)
     {
         if (file.Length == 0)
-            return BadRequest("File is empty.");
+            throw new ValidationException("File", "File is empty.");
 
         if (!System.IO.Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
-            return BadRequest("Only .xlsx files are allowed.");
+            throw new ValidationException("File", "Only .xlsx files are allowed.");
 
         var ownerUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var command = new ImportSalesReportCommand(file.OpenReadStream(), file.FileName, ownerUserId);
