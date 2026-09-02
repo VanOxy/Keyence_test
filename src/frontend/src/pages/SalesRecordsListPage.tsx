@@ -7,14 +7,13 @@ import { salesRecordsApi } from '../api/salesRecordsApi';
 import { getErrorMessage } from '../api/errors';
 import type { SalesRecordListItem } from '../api/types';
 
-const PAGE_SIZE = 50;
-
 export function SalesRecordsListPage() {
   const [searchParams] = useSearchParams();
   const salesReportId = searchParams.get('salesReportId') ?? undefined;
 
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
   // Sorting/paging happen on the server — this only tracks which page/column/direction to ask for.
   const [sortBy, setSortBy] = useState<string>();
   const [descending, setDescending] = useState(true);
@@ -25,25 +24,30 @@ export function SalesRecordsListPage() {
     isPlaceholderData,
     error,
   } = useQuery({
-    queryKey: ['salesRecords', salesReportId, search, sortBy, descending, page],
+    queryKey: ['salesRecords', salesReportId, search, sortBy, descending, page, pageSize],
     queryFn: () =>
       salesRecordsApi.list({
         salesReportId,
         search: search || undefined,
         sortBy,
         descending,
-        skip: (page - 1) * PAGE_SIZE,
-        take: PAGE_SIZE,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
       }),
     placeholderData: keepPreviousData, // keep showing the current page while the next one loads
   });
 
   const handleTableChange = (
-    pagination: { current?: number },
+    pagination: { current?: number; pageSize?: number },
     _filters: unknown,
     sorter: SorterResult<SalesRecordListItem> | SorterResult<SalesRecordListItem>[],
   ) => {
-    setPage(pagination.current ?? 1);
+    if (pagination.pageSize && pagination.pageSize !== pageSize) {
+      setPageSize(pagination.pageSize);
+      setPage(1); // page-size change always starts back at page 1 — the old page number no longer means the same rows
+    } else {
+      setPage(pagination.current ?? 1);
+    }
 
     const { field, order } = Array.isArray(sorter) ? sorter[0] : sorter;
     if (typeof field === 'string' && order) {
@@ -92,7 +96,13 @@ export function SalesRecordsListPage() {
         size="small"
         loading={isLoading || isPlaceholderData}
         dataSource={data?.items ?? []}
-        pagination={{ current: page, pageSize: PAGE_SIZE, total: data?.totalCount ?? 0 }}
+        pagination={{
+          current: page,
+          pageSize,
+          total: data?.totalCount ?? 0,
+          showSizeChanger: true,
+          pageSizeOptions: [20, 50, 100, 200],
+        }}
         scroll={{ x: true }}
         columns={columns}
         onChange={handleTableChange}

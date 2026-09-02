@@ -9,8 +9,6 @@ import { getErrorMessage } from '../api/errors';
 import { useAuth } from '../auth/AuthContext';
 import type { SalesReportListItem } from '../api/types';
 
-const PAGE_SIZE = 50;
-
 export function SalesReportsListPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -18,6 +16,7 @@ export function SalesReportsListPage() {
 
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
   const [sortBy, setSortBy] = useState<string>();
   const [descending, setDescending] = useState(true);
 
@@ -27,18 +26,23 @@ export function SalesReportsListPage() {
     isPlaceholderData,
     error,
   } = useQuery({
-    queryKey: ['salesReports', search, sortBy, descending, page],
+    queryKey: ['salesReports', search, sortBy, descending, page, pageSize],
     queryFn: () =>
-      salesReportsApi.list({ search: search || undefined, sortBy, descending, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
+      salesReportsApi.list({ search: search || undefined, sortBy, descending, skip: (page - 1) * pageSize, take: pageSize }),
     placeholderData: keepPreviousData, // keep showing the current page while the next one loads
   });
 
   const handleTableChange = (
-    pagination: { current?: number },
+    pagination: { current?: number; pageSize?: number },
     _filters: unknown,
     sorter: SorterResult<SalesReportListItem> | SorterResult<SalesReportListItem>[],
   ) => {
-    setPage(pagination.current ?? 1);
+    if (pagination.pageSize && pagination.pageSize !== pageSize) {
+      setPageSize(pagination.pageSize);
+      setPage(1); // page-size change always starts back at page 1 — the old page number no longer means the same rows
+    } else {
+      setPage(pagination.current ?? 1);
+    }
 
     const { field, order } = Array.isArray(sorter) ? sorter[0] : sorter;
     if (typeof field === 'string' && order) {
@@ -109,7 +113,13 @@ export function SalesReportsListPage() {
         size="small"
         loading={isLoading || isPlaceholderData}
         dataSource={data?.items ?? []}
-        pagination={{ current: page, pageSize: PAGE_SIZE, total: data?.totalCount ?? 0 }}
+        pagination={{
+          current: page,
+          pageSize,
+          total: data?.totalCount ?? 0,
+          showSizeChanger: true,
+          pageSizeOptions: [20, 50, 100, 200],
+        }}
         columns={columns}
         onChange={handleTableChange}
       />
