@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Card, Form, Input, Typography, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { authApi } from '../api/authApi';
 import { getErrorMessage } from '../api/errors';
 import { useAuth } from '../auth/AuthContext';
@@ -14,13 +14,17 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = (location.state as { from?: { pathname: string; search: string } } | null)?.from;
+  const redirectTo = from ? `${from.pathname}${from.search}` : '/upload';
 
   const handleSubmit = async (values: LoginFormValues) => {
     setLoading(true);
     try {
       const result = await authApi.login(values.email, values.password);
       login(result);
-      navigate('/upload');
+      navigate(redirectTo, { replace: true });
     } catch (error) {
       message.error(getErrorMessage(error));
     } finally {

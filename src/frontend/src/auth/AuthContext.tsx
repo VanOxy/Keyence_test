@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { message } from 'antd';
+import { setUnauthorizedHandler } from '../api/authEvents';
 import type { LoginResult } from '../api/types';
 
 interface AuthContextValue {
@@ -26,6 +28,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('auth');
     setUser(null);
   };
+
+  // The server rejected our token (expired or otherwise invalid): drop the session and let
+  // ProtectedRoute do the redirecting. A page usually fires several requests at once, so the
+  // toast gets a fixed key — one message, not one per failed request.
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      logout();
+      message.warning({ key: 'session-expired', content: 'Session expired — please log in again.' });
+    });
+  }, []);
 
   return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
 }
