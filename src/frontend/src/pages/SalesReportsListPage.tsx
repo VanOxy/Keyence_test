@@ -94,9 +94,12 @@ export function SalesReportsListPage() {
           Reports
         </Typography.Title>
 
-        {isManagerOrAdmin && (
-          <Input.Search placeholder="Search by file name or owner" allowClear style={{ width: 280 }} onSearch={handleSearch} />
-        )}
+        <Input.Search
+          placeholder={isManagerOrAdmin ? 'Search by file name or owner' : 'Search by file name'}
+          allowClear
+          style={{ width: 280 }}
+          onSearch={handleSearch}
+        />
       </div>
 
       {error && <Alert style={{ marginBottom: 24 }} type="error" title={getErrorMessage(error)} showIcon />}

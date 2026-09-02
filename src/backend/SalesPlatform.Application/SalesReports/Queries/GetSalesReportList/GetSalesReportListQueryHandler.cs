@@ -43,9 +43,11 @@ public class GetSalesReportListQueryHandler : IRequestHandler<GetSalesReportList
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
             var search = request.Search.Trim();
-            query = query.Where(x =>
-                x.Report.OriginalFileName.Contains(search) ||
-                x.OwnerFullName.Contains(search));
+            // SalesRep has no Owner column to search by (every visible row is already theirs) —
+            // only Manager/Admin get the extra OR clause on owner name.
+            query = _currentUser.Role == UserRole.SalesRep
+                ? query.Where(x => x.Report.OriginalFileName.Contains(search))
+                : query.Where(x => x.Report.OriginalFileName.Contains(search) || x.OwnerFullName.Contains(search));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
